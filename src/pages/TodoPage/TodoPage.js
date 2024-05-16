@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { connect } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { addTodo, toggleTodo, fetchTodos } from '../../store/reducer';
-
 import styles from './todoPage.modules.css';
 
-function TodoPage({ todos, addTodo, toggleTodo, fetchTodos}) {
+function TodoPage() {
     const [inputValue, setInputValue] = useState('');
+    const dispatch = useDispatch();
+    const { todos, status, error } = useSelector(state => state.todos);
 
     const handleInputChange = (e) => {
         setInputValue(e.target.value);
@@ -13,14 +14,14 @@ function TodoPage({ todos, addTodo, toggleTodo, fetchTodos}) {
 
     const handleAddTodo = () => {
         if (inputValue.trim() !== '') {
-            addTodo({ title: inputValue, completed: false });
+            dispatch(addTodo({ title: inputValue, completed: false }));
             setInputValue('');
         }
     };
 
     useEffect(() => {
-        fetchTodos();
-    }, [fetchTodos]);
+        dispatch(fetchTodos());
+    }, [dispatch]);
 
     return (
         <div>
@@ -37,11 +38,13 @@ function TodoPage({ todos, addTodo, toggleTodo, fetchTodos}) {
                     <button onClick={handleAddTodo} className={"buttonTodos"}>+</button>
                 </div>
                 <div className="container">
+                    {status === 'loading' && <h2>Loading...</h2>}
+                    {error && <h2>An error occurred: {error}</h2>}
                     {todos.map((todo, index) => (
                         <div
                             key={index}
                             className={`todo-item ${todo.completed ? 'completed' : ''}`}
-                            onClick={() => toggleTodo({ index })}
+                            onClick={() => dispatch(toggleTodo({ index }))}
                         >
                             {todo.title}
                         </div>
@@ -52,14 +55,4 @@ function TodoPage({ todos, addTodo, toggleTodo, fetchTodos}) {
     );
 }
 
-const mapStateToProps = (state) => ({
-    todos: state.todos.todos,
-});
-
-const mapDispatchToProps = {
-    addTodo,
-    toggleTodo,
-    fetchTodos
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(TodoPage);
+export default TodoPage;

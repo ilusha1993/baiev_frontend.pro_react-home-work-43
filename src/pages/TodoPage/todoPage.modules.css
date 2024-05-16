@@ -33,6 +33,7 @@ h1.title{
     font-weight: bold;
     width: 400px;
     overflow-wrap: break-word;
+    display: flex;
 
     &::before{
         content: '⬜';
