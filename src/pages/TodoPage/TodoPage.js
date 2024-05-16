@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
-import { addTodo, toggleTodo } from '../../store/reducer';
+import { addTodo, toggleTodo, fetchTodos } from '../../store/reducer';
 
 import styles from './todoPage.modules.css';
 
-function TodoPage({ todos, addTodo, toggleTodo}) {
+function TodoPage({ todos, addTodo, toggleTodo, fetchTodos}) {
     const [inputValue, setInputValue] = useState('');
 
     const handleInputChange = (e) => {
@@ -13,10 +13,14 @@ function TodoPage({ todos, addTodo, toggleTodo}) {
 
     const handleAddTodo = () => {
         if (inputValue.trim() !== '') {
-            addTodo({ text: inputValue, completed: false });
+            addTodo({ title: inputValue, completed: false });
             setInputValue('');
         }
     };
+
+    useEffect(() => {
+        fetchTodos();
+    }, [fetchTodos]);
 
     return (
         <div>
@@ -39,7 +43,7 @@ function TodoPage({ todos, addTodo, toggleTodo}) {
                             className={`todo-item ${todo.completed ? 'completed' : ''}`}
                             onClick={() => toggleTodo({ index })}
                         >
-                            {todo.text}
+                            {todo.title}
                         </div>
                     ))}
                 </div>
@@ -55,6 +59,7 @@ const mapStateToProps = (state) => ({
 const mapDispatchToProps = {
     addTodo,
     toggleTodo,
+    fetchTodos
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(TodoPage);
